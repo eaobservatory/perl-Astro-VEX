@@ -9,6 +9,8 @@ Astro::VEX::NamedItem - VEX (VLBI Experiment Definition) named item base class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 sub name {
     my $self = shift;
 

@@ -1,2 +1,9 @@
 *~
 .*.swp
+*.bak
+/Astro-VEX-*
+/_build
+/blib
+/*META.*
+/Build
+/*.vex

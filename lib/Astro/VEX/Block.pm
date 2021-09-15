@@ -9,6 +9,8 @@ Astro::VEX::Block - VEX (VLBI Experiment Definition) block class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use parent qw/Astro::VEX::Container/;
 
 use overload '""' => 'stringify';

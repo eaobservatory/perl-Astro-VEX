@@ -9,6 +9,8 @@ Astro::VEX::Ref - VEX (VLBI Experiment Definition) reference class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use parent qw/Astro::VEX::NamedItem/;
 
 use overload '""' => 'stringify';

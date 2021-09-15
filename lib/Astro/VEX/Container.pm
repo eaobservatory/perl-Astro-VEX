@@ -9,6 +9,8 @@ Astro::VEX::Container - VEX (VLBI Experiment Definition) container base class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use parent qw/Astro::VEX::NamedItem/;
 
 sub new {

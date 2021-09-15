@@ -1,0 +1,16 @@
+Build.PL
+lib/Astro/VEX.pm
+lib/Astro/VEX/Block.pm
+lib/Astro/VEX/Comment.pm
+lib/Astro/VEX/Container.pm
+lib/Astro/VEX/Def.pm
+lib/Astro/VEX/Link.pm
+lib/Astro/VEX/NamedItem.pm
+lib/Astro/VEX/Param.pm
+lib/Astro/VEX/Parse.pm
+lib/Astro/VEX/Ref.pm
+lib/Astro/VEX/Scan.pm
+MANIFEST
+META.json
+META.yml
+t/1_use.t

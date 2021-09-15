@@ -9,6 +9,8 @@ Astro::VEX::Link - VEX (VLBI Experiment Definition) link class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use overload '""' => 'stringify';
 
 sub new {

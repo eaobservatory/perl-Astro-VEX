@@ -9,6 +9,8 @@ Astro::VEX::Parse - VEX (VLBI Experiment Definition) parser module
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use Parse::RecDescent;
 
 use Astro::VEX;

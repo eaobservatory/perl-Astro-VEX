@@ -9,6 +9,8 @@ Astro::VEX::Comment - VEX (VLBI Experiment Definition) comment class
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use overload '""' => 'stringify';
 
 sub new {

@@ -9,6 +9,8 @@ Astro::VEX - VEX (VLBI Experiment Definition) file handling module
 use strict;
 use warnings;
 
+our $VERSION = '0.001';
+
 use overload '""' => 'stringify';
 
 sub new {
