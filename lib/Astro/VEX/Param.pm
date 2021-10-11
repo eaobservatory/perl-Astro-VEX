@@ -26,7 +26,7 @@ sub new {
     }, $class;
 }
 
-sub value {
+sub item {
     my $self = shift;
 
     my $num_val = scalar @{$self->{'VALUES'}};
@@ -38,7 +38,13 @@ sub value {
         die 'Parameter has multiple values';
     }
 
-    return $self->{'VALUES'}->[0]->value;
+    return $self->{'VALUES'}->[0];
+}
+
+sub value {
+    my $self = shift;
+
+    return $self->item->value;
 }
 
 sub stringify {
