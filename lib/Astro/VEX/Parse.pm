@@ -19,6 +19,9 @@ use Astro::VEX::Comment;
 use Astro::VEX::Def;
 use Astro::VEX::Link;
 use Astro::VEX::Param;
+use Astro::VEX::Param::Empty;
+use Astro::VEX::Param::Number;
+use Astro::VEX::Param::String;
 use Astro::VEX::Ref;
 use Astro::VEX::Scan;
 
@@ -26,17 +29,19 @@ my $grammar = q{
     vex: header content(s?)
         {new Astro::VEX(version => $item[1], content => $item[2]);}
 
-    header: 'VEX_rev' '=' /\d+\.\d+/ ';' {$item[3];}
+    header: 'VEX_rev' '=' /\d+\.\d+/ ';'
+        {$item[3];}
 
     content: comment | block
 
-    comment: '*' <skip:'[ \t]*'> /.*/
+    comment: '*' <skip:''> /.*/
         {new Astro::VEX::Comment($item[3]);}
 
     block: block_header block_content(s?)
         {new Astro::VEX::Block($item[1], $item[2]);}
 
-    block_header: '$' block_name ';' {$item[2];}
+    block_header: '$' block_name ';'
+        {$item[2];}
 
     block_content: comment | statement_ref | statement_def | statement_scan | parameter_assignment
 
@@ -60,28 +65,60 @@ my $grammar = q{
         {my $tail = $item[2]->[0]; [$item[1], ref $tail ? @$tail : ()];}
 
     parameter_values_tail: ':' parameter_values
-        {$item[2]}
+        {$item[2];}
 
-    parameter_value: parameter_value_link | parameter_value_plain | parameter_value_quoted
-
+    parameter_value: parameter_value_link | parameter_value_number_with_unit | parameter_value_number_without_unit | parameter_value_plain | parameter_value_quoted | parameter_value_empty
 
     block_name: /[!"#$%&'()*+,\\-.\/0-9:<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
 
-    # TODO: Needs correct character set.
-    reference: /\$[_A-Z]+/ {substr $item[1], 1;}
+    reference: '$' block_name
+        {$item[2];}
 
-    parameter_name: /[!"#%'()+,\\-.\/0-9:<>?\@A-Z\\[\\\\\\]^_`a-z{|}~][!"#$%&'()*+,\\-.\/0-9:<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]*/
+    parameter_name: ...!/[$&*"]/ /[!"#$%&'()*+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
 
-    # TODO: Needs correct character set.
-    parameter_value_link: /&[_a-zA-Z0-9]+/
-        {new Astro::VEX::Link(substr $item[1], 1);}
+    parameter_value_link: '&' /[!"#$%&'()*+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
+        {new Astro::VEX::Link($item[2]);}
 
-    parameter_value_plain: /[ !#%'()+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~\][ !#%'()+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~\\n"]*/
+    parameter_value_plain: ...!/["$&]/ /[ !"#$%&'()+,\\-.\/0-9<=>?\@A-Z\\[\\\\\\]^_`a-z{|}~\\n\\t]+/
+        {new Astro::VEX::Param::String($item[2] =~ s/[\n\t ]+$//r, 0)}
 
-    parameter_value_quoted: /"[ !#%'()+,\\-.\/0-9:<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+"/
+    parameter_value_quoted: '"' <skip:''> parameter_value_quoted_char(s?) '"'
+        {new Astro::VEX::Param::String((join '', @{$item[3]}), 1)}
 
-    # TODO: Needs correct character set.
-    identifier: /[-_+a-zA-Z0-9<#.@]+/
+    parameter_value_quoted_char: parameter_value_quoted_char_plain | parameter_value_quoted_char_escape
+
+    parameter_value_quoted_char_plain: /[ !#$%&'()*+,\\-.\/0-9:;<=>?\@A-Z\\[\\]^_`a-z{|}~\\n\\t]/
+
+    parameter_value_quoted_char_escape: '\\\\' /["'?\\\\]/
+        {$item[2]}
+
+    parameter_value_empty: '' .../[:;]/
+        {new Astro::VEX::Param::Empty()}
+
+    parameter_value_number_with_unit: parameter_value_number_plain parameter_value_unit .../[:;]/
+        {new Astro::VEX::Param::Number($item[1], $item[2])}
+
+    parameter_value_number_without_unit: parameter_value_number_plain .../[:;]/
+        {new Astro::VEX::Param::Number($item[1], undef)}
+
+    parameter_value_number_plain: /[-+]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))(?:[Ee][-+]?[0-9]+)?/
+
+    parameter_value_unit: parameter_value_unit_angrate | parameter_value_unit_velocity | parameter_value_unit_time | parameter_value_unit_freq | parameter_value_unit_rate | parameter_value_unit_length | parameter_value_unit_angle | parameter_value_unit_flux | parameter_value_unit_bitdens
+
+    parameter_value_unit_angrate: parameter_value_unit_angle '/' parameter_value_unit_time
+        {$item[1] . '/' . $item[3]}
+    parameter_value_unit_velocity: parameter_value_unit_length '/' parameter_value_unit_time
+        {$item[1] . '/' . $item[3]}
+
+    parameter_value_unit_time: 'psec' | 'nsec' | 'usec' | 'msec' | 'sec' | 'min' | 'hr' | 'yr'
+    parameter_value_unit_freq: 'mHz' | 'Hz' | 'kHz' | 'MHz' | 'GHz'
+    parameter_value_unit_rate: 'ks/sec' | 'Ms/sec'
+    parameter_value_unit_length: 'um' | 'mm' | 'cm' | 'm' | 'km' | 'in' | 'ft'
+    parameter_value_unit_angle: 'mdeg' | 'deg' | 'amin' | 'asec' | 'rad'
+    parameter_value_unit_flux: 'mJy' | 'Jy'
+    parameter_value_unit_bitdens: 'bpi' | 'kbpi'
+
+    identifier: /[!"#%'()+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
 
     # Example (not used).
     anychar: /[ !"#$%&'()*+,\\-.\/0-9:;<=>?\@A-Z\\[\\\\\\]^_`a-z{|}~]/

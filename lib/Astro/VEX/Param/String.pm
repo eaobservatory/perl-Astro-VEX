@@ -1,8 +1,8 @@
-package Astro::VEX::Param;
+package Astro::VEX::Param::String;
 
 =head1 NAME
 
-Astro::VEX::Param - VEX (VLBI Experiment Definition) parameter class
+Astro::VEX::Param::String - VEX (VLBI Experiment Definition) string parameter class
 
 =cut
 
@@ -11,40 +11,39 @@ use warnings;
 
 our $VERSION = '0.001';
 
-use parent qw/Astro::VEX::NamedItem/;
+use parent qw/Astro::VEX::Param::Value/;
 
 use overload '""' => 'stringify';
 
 sub new {
     my $proto = shift; my $class = ref($proto) || $proto;
-    my $name = shift;
-    my $values = shift;
+    my $value = shift;
+    my $quoted = shift;
 
     return bless {
-        NAME => $name,
-        VALUES => $values,
+        VALUE => $value,
+        QUOTED => $quoted,
     }, $class;
-}
-
-sub value {
-    my $self = shift;
-
-    my $num_val = scalar @{$self->{'VALUES'}};
-
-    if ($num_val == 0) {
-        die 'Parameter has no values';
-    }
-    elsif ($num_val > 1) {
-        die 'Parameter has multiple values';
-    }
-
-    return $self->{'VALUES'}->[0]->value;
 }
 
 sub stringify {
     my $self = shift;
 
-    return (' ' x $self->indent) . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
+    my $value = $self->{'VALUE'};
+    my $quote = $self->{'QUOTED'};
+
+    unless (defined $quote) {
+        $quote = 1 if $value =~ /[ \t\n]/
+            || $value =~ /^"/;
+    }
+
+    return $value unless $quote;
+
+    $value =~ s/\\/\\\\/;
+
+    $value =~ s/(["])/\\$1/g;
+
+    return sprintf '"%s"', $value;
 }
 
 1;

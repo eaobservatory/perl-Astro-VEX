@@ -1,8 +1,8 @@
-package Astro::VEX::Param;
+package Astro::VEX::Param::Number;
 
 =head1 NAME
 
-Astro::VEX::Param - VEX (VLBI Experiment Definition) parameter class
+Astro::VEX::Param::Number - VEX (VLBI Experiment Definition) number parameter  class
 
 =cut
 
@@ -11,40 +11,35 @@ use warnings;
 
 our $VERSION = '0.001';
 
-use parent qw/Astro::VEX::NamedItem/;
+use parent qw/Astro::VEX::Param::Value/;
 
 use overload '""' => 'stringify';
 
 sub new {
     my $proto = shift; my $class = ref($proto) || $proto;
-    my $name = shift;
-    my $values = shift;
+    my $value = shift;
+    my $unit = shift;
 
     return bless {
-        NAME => $name,
-        VALUES => $values,
+        VALUE => $value,
+        UNIT => $unit,
     }, $class;
 }
 
-sub value {
+sub unit {
     my $self = shift;
-
-    my $num_val = scalar @{$self->{'VALUES'}};
-
-    if ($num_val == 0) {
-        die 'Parameter has no values';
-    }
-    elsif ($num_val > 1) {
-        die 'Parameter has multiple values';
-    }
-
-    return $self->{'VALUES'}->[0]->value;
+    return $self->{'UNIT'};
 }
 
 sub stringify {
     my $self = shift;
 
-    return (' ' x $self->indent) . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
+    my $value = $self->{'VALUE'};
+    my $unit = $self->{'UNIT'};
+
+    return $value unless defined $unit;
+
+    return sprintf '%s %s', $value, $unit;
 }
 
 1;

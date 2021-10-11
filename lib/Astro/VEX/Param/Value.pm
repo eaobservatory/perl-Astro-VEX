@@ -1,8 +1,8 @@
-package Astro::VEX::Param;
+package Astro::VEX::Param::Value;
 
 =head1 NAME
 
-Astro::VEX::Param - VEX (VLBI Experiment Definition) parameter class
+Astro::VEX::Param::Value - VEX (VLBI Experiment Definition) parameter value base class
 
 =cut
 
@@ -11,40 +11,9 @@ use warnings;
 
 our $VERSION = '0.001';
 
-use parent qw/Astro::VEX::NamedItem/;
-
-use overload '""' => 'stringify';
-
-sub new {
-    my $proto = shift; my $class = ref($proto) || $proto;
-    my $name = shift;
-    my $values = shift;
-
-    return bless {
-        NAME => $name,
-        VALUES => $values,
-    }, $class;
-}
-
 sub value {
     my $self = shift;
-
-    my $num_val = scalar @{$self->{'VALUES'}};
-
-    if ($num_val == 0) {
-        die 'Parameter has no values';
-    }
-    elsif ($num_val > 1) {
-        die 'Parameter has multiple values';
-    }
-
-    return $self->{'VALUES'}->[0]->value;
-}
-
-sub stringify {
-    my $self = shift;
-
-    return (' ' x $self->indent) . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
+    return $self->{'VALUE'};
 }
 
 1;
