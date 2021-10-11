@@ -1,4 +1,5 @@
 Build.PL
+Changes
 lib/Astro/VEX.pm
 lib/Astro/VEX/Block.pm
 lib/Astro/VEX/Comment.pm
