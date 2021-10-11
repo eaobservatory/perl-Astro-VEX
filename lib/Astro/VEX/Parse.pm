@@ -79,7 +79,7 @@ my $grammar = q{
     parameter_value_link: '&' /[!"#$%&'()*+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
         {new Astro::VEX::Link($item[2]);}
 
-    parameter_value_plain: ...!/["$&]/ /[ !"#$%&'()+,\\-.\/0-9<=>?\@A-Z\\[\\\\\\]^_`a-z{|}~\\n\\t]+/
+    parameter_value_plain: ...!/["$&]/ /[!"#$%&'()+,\\-.\/0-9<=>?\@A-Z\\[\\\\\\]^_`a-z{|}~\\n\\t]+/
         {new Astro::VEX::Param::String($item[2] =~ s/[\n\t ]+$//r, 0)}
 
     parameter_value_quoted: '"' <skip:''> parameter_value_quoted_char(s?) '"'
