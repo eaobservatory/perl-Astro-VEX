@@ -17,6 +17,12 @@ sub name {
     return $self->{'NAME'};
 }
 
+sub indent {
+    my $self = shift;
+
+    return 5;
+}
+
 1;
 
 __END__

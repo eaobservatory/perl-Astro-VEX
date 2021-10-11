@@ -25,7 +25,7 @@ sub new {
 sub stringify {
     my $self = shift;
 
-    return '* ' . $self->{'TEXT'};
+    return '*' . $self->{'TEXT'};
 }
 
 1;

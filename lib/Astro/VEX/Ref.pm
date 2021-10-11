@@ -29,7 +29,7 @@ sub new {
 sub stringify {
     my $self = shift;
 
-    return '    ref $' . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
+    return (' ' x $self->indent) . 'ref $' . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
 }
 
 1;

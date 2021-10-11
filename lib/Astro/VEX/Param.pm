@@ -44,7 +44,7 @@ sub value {
 sub stringify {
     my $self = shift;
 
-    return '    ' . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
+    return (' ' x $self->indent) . $self->{'NAME'} . ' = ' . (join ' : ', @{$self->{'VALUES'}}) . ';';
 }
 
 1;
