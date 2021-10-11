@@ -103,7 +103,7 @@ my $grammar = q{
 
     parameter_value_number_plain: /[-+]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))(?:[Ee][-+]?[0-9]+)?/
 
-    parameter_value_unit: parameter_value_unit_angrate | parameter_value_unit_velocity | parameter_value_unit_time | parameter_value_unit_freq | parameter_value_unit_rate | parameter_value_unit_length | parameter_value_unit_angle | parameter_value_unit_flux | parameter_value_unit_bitdens
+    parameter_value_unit: parameter_value_unit_angrate | parameter_value_unit_velocity | parameter_value_unit_time | parameter_value_unit_freq | parameter_value_unit_rate | parameter_value_unit_length | parameter_value_unit_angle | parameter_value_unit_flux | parameter_value_unit_bitdens | parameter_value_unit_flsz
 
     parameter_value_unit_angrate: parameter_value_unit_angle '/' parameter_value_unit_time
         {$item[1] . '/' . $item[3]}
@@ -117,6 +117,7 @@ my $grammar = q{
     parameter_value_unit_angle: 'mdeg' | 'deg' | 'amin' | 'asec' | 'rad'
     parameter_value_unit_flux: 'mJy' | 'Jy'
     parameter_value_unit_bitdens: 'bpi' | 'kbpi'
+    parameter_value_unit_flsz: 'MB' | 'GB' | 'TB'
 
     identifier: /[!"#%'()+,\\-.\/0-9<>?\@A-Z\\[\\\\\\]^_`a-z{|}~]+/
 
